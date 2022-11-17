@@ -30,7 +30,7 @@ resource "aws_subnet" "dnd_public_subnet" {
   availability_zone       = random_shuffle.az_list.result[count.index]
 
   tags = {
-    Name = "mtc_public_${count.index + 1}"
+    Name = "terraform_dnd_public_${count.index + 1}"
   }
 }
 
