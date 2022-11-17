@@ -7,11 +7,6 @@ resource "random_integer" "random" {
   max = 100
 }
 
-resource "random_shuffle" "az_list" {
-  input        = data.aws_availability_zones.available.names
-  result_count = var.max_subnets
-  }
-
 resource "aws_vpc" "terraform_dnd_vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
@@ -43,6 +38,15 @@ resource "aws_subnet" "dnd_private_subnet" {
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
-    Name = "mtc_private_${count.index + 1}"
+    Name = "terraform_dnd_private_${count.index + 1}"
+  }
+}
+
+
+resource "aws_internet_gateway" "dnd_internet_gateway" {
+  vpc_id = aws_vpc.terraform_dnd_vpc.id
+
+  tags = {
+    Name = "dnd_igw"
   }
 }
