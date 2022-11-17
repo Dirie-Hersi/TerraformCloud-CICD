@@ -27,10 +27,22 @@ resource "aws_subnet" "dnd_public_subnet" {
   vpc_id                  = aws_vpc.terraform_dnd_vpc.id
   cidr_block              = var.public_cidrs[count.index]
   map_public_ip_on_launch = true
-  availability_zone       = random_shuffle.az_list.result[count.index]
+  
+  availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
     Name = "terraform_dnd_public_${count.index + 1}"
   }
 }
 
+resource "aws_subnet" "dnd_private_subnet" {
+  count      = var.private_sn_count
+  vpc_id     = aws_vpc.terraform_dnd_vpc.id
+  cidr_block = var.private_cidrs[count.index]
+
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+
+  tags = {
+    Name = "mtc_private_${count.index + 1}"
+  }
+}
