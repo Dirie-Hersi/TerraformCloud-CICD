@@ -50,3 +50,24 @@ resource "aws_internet_gateway" "dnd_internet_gateway" {
     Name = "dnd_igw"
   }
 }
+
+resource "aws_route_table" "dnd_public_rt" {
+  vpc_id = aws_vpc.terraform_dnd_vpc.id
+
+  tags = {
+    Name = "dnd_public_rt"
+  }
+}
+
+resource "aws_route_table_association" "dnd_public_assoc" {
+  count          = var.public_sn_count
+  subnet_id      = aws_subnet.dnd_public_subnet.*.id[count.index]
+  route_table_id = aws_route_table.dnd_public_rt.id
+}
+
+
+resource "aws_route" "default_route" {
+  route_table_id         = aws_route_table.dnd_public_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.dnd_internet_gateway.id
+}
